@@ -52,7 +52,7 @@ RUN curl -L https://downloads.micron.ox.ac.uk/fiji_update/mirrors/fiji-latest/fi
 
 # Pull MeXpose github repository and IMC-Plugins
 RUN cd /home && \
-    git clone https://github.com/Luke-Br/MeXpose.git && \
+    git clone https://github.com/KoellenspergerLab/MeXpose.git && \
     svn export https://github.com/BodenmillerGroup/ImcPluginsCP/trunk/plugins
 
 # Update .bashrc
