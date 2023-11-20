@@ -1,5 +1,5 @@
 
-<img src="https://raw.githubusercontent.com/Luke-Br/MeXpose/master/graphical_workflow.jpg" width=65% height=65%>
+<img src="https://raw.githubusercontent.com/KoellenspergerLab/MeXpose/master/graphical_workflow.jpg" width=65% height=65%>
 
 ---
 
