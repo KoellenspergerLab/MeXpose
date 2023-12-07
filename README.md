@@ -77,7 +77,7 @@ docker run -it \
   --volume="/path/to/data/:/root/data/" \
   --net=host \
   --name=mexpose \
-  koellensperger-lab/mexpose:latest
+  koellenspergerlab/mexpose:0.1.3
 ```
 
 The first environment flag as well as the first two volume bind mounts are required for X forwarding, passing graphical output from the container to the host system. The other two environment flags are used for setting the locale. To keep image size as small as possible, only POSIX, C and C.UTF-8 locales are available. If you require a different locale, either 1.) Set the locale in the Dockerfile and rebuild the MeXpose image or 2.) Install the *locales* package with the command below and [set the locale inside the container](https://help.ubuntu.com/community/Locale#Changing_settings_temporarily).
