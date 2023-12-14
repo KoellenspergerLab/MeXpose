@@ -1076,7 +1076,7 @@ body .markdown-body
 .highlight .vi{color:teal}
 .highlight .il{color:#009999}
 .highlight .gc{color:#999;background-color:#EAF2F5}
-</style><title>README</title></head><body><article class="markdown-body"><p><img src="https://raw.githubusercontent.com/Luke-Br/MeXpose/main/graphical_workflow.jpg" width=65% height=65%></p>
+</style><title>README</title></head><body><article class="markdown-body"><p><img src="https://raw.githubusercontent.com/KoellenspergerLab/MeXpose/master/graphical_workflow.jpg" width=65% height=65%></p>
 <hr />
 <h2 id="welcome">Welcome<a class="headerlink" href="#welcome" title="Permanent link"></a></h2>
 <p>MeXpose is a workflow designed to perform multiplexed image analysis, specialising in (but not limited to) analysis of metal distribution in LA-ICP-TOFMS data.</p>
@@ -1136,12 +1136,20 @@ body .markdown-body
 <li>MeXpose github repository</li>
 </ul>
 </li>
+<li>
+<p>Building container:</p>
+<ul>
+<li>Docker</li>
+<li>Dockerfile (MeXpose github)</li>
+<li>mexpose.yaml conda environment (MeXpose github)</li>
+</ul>
+</li>
 </ul>
 <h3 id="docker">Docker<a class="headerlink" href="#docker" title="Permanent link"></a></h3>
 <p>Install Docker Desktop for your respective platform <a href="https://docs.docker.com/desktop/install/linux-install/">Linux</a>/<a href="https://docs.docker.com/desktop/install/mac-install/">Mac</a>/<a href="https://docs.docker.com/desktop/install/windows-install/">Windows</a>. For Windows, make sure to use the WSL2 engine for better performance.</p>
 <p>Adjust resources allocated to Docker Desktop <a href="https://docs.docker.com/desktop/settings/linux/">Linux</a>/<a href="https://docs.docker.com/desktop/settings/mac/">Mac</a>/<a href="https://learn.microsoft.com/en-us/windows/wsl/wsl-config">Windows</a>. We recommend 8GB of RAM and 4 performance CPU cores as a baseline.</p>
 <h4 id="interactive-setup">Interactive Setup<a class="headerlink" href="#interactive-setup" title="Permanent link"></a></h4>
-<p>X forwarding has been tested on both Linux and Windows and should work &lsquo;out of the box&rsquo; when using the sample commands under <a href="/C:/Users/Umwelt/Desktop/MeXpose_v1/running-mexpose">Running MeXpose</a>. Interactive use could not be tested on Mac OS. However, X forwading can be achieved on Mac OS using <a href="https://www.xquartz.org/index.html">XQuartz</a>.</p>
+<p>X forwarding has been tested on both Linux and Windows and should work &lsquo;out of the box&rsquo; when using the sample commands under <a href="/C:/Users/Umwelt/Desktop/MeXpose_v2/MeXpose/running-mexpose">Running MeXpose</a>. Interactive use could not be tested on Mac OS. However, X forwading can be achieved on Mac OS using <a href="https://www.xquartz.org/index.html">XQuartz</a>.</p>
 <p><strong>Note</strong>: The MeXpose container currently does not support GPU integration. </p>
 <hr />
 <h2 id="running-mexpose">Running MeXpose<a class="headerlink" href="#running-mexpose" title="Permanent link"></a></h2>
@@ -1152,11 +1160,11 @@ body .markdown-body
   --env=LANG=C.UTF-8 \
   --env=LC_ALL=C.UTF-8 \
   --volume=&quot;/tmp/.X11-unix:/tmp/.X11-unix&quot; \
-  --volume=&quot;$XAUTHORITY:/root/.Xauthority&quot; \
+  --volume=&quot;$HOME/.Xauthority:/root/.Xauthority&quot; \
   --volume=&quot;/path/to/data/:/root/data/&quot; \
   --net=host \
-  --name=meow \
-  test
+  --name=mexpose \
+  koellenspergerlab/mexpose:0.1.3
 </pre></div>
 
 <p>The first environment flag as well as the first two volume bind mounts are required for X forwarding, passing graphical output from the container to the host system. The other two environment flags are used for setting the locale. To keep image size as small as possible, only POSIX, C and C.UTF-8 locales are available. If you require a different locale, either 1.) Set the locale in the Dockerfile and rebuild the MeXpose image or 2.) Install the <em>locales</em> package with the command below and <a href="https://help.ubuntu.com/community/Locale#Changing_settings_temporarily">set the locale inside the container</a>.</p>
@@ -1172,8 +1180,8 @@ body .markdown-body
   -v /run/desktop/mnt/host/wslg/.X11-unix:/tmp/.X11-unix `
   -v /run/desktop/mnt/host/wslg:/mnt/wslg `
   -v &quot;\path\to\data:/root/data&quot; `
-  --name=meow `
-  test
+  --name=mexpose `
+  koellensperger-lab/mexpose:0.1.3
 </pre></div>
 
 <p>The first environment flag as well as the first two volume bind mounts are required for X forwarding, passing graphical output from the container to the host system. The other two environment flags are used for setting the locale. To keep image size as small as possible, only POSIX, C and C.UTF-8 locales are available. If you require a different locale, either 1.) Set the locale in the Dockerfile and rebuild the MeXpose image or 2.) Install the <em>locales</em> package with the command below and <a href="https://help.ubuntu.com/community/Locale#Changing_settings_temporarily">set the locale inside the container</a>.</p>
@@ -1195,4 +1203,4 @@ body .markdown-body
 <p>Please cite the following paper when using MeXpose in your work:</p>
 <hr />
 <h2 id="licensing">Licensing<a class="headerlink" href="#licensing" title="Permanent link"></a></h2>
-<p>The code included with MeXpose, namely all python scripts, jupyter notebooks and fiji macros, is distributed under the MIT license.</p></article></body></html>
+<p>The code included with MeXpose, namely all python scripts, jupyter notebooks and fiji macros, is distributed under the MIT license. The MeXpose container hosted on DockerHub is distributed under the GPLv3 license.</p></article></body></html>

@@ -334,8 +334,8 @@ class CSVProcessor:
         """
         mask = pd.Series([True] * len(df))
         for col in columns:
-            low = df[col].percentile(p_low)
-            high = df[col].percentile(p_high)
+            low = df[col].quantile(p_low)
+            high = df[col].quantile(p_high)
             col_mask = (df[col] >= low) & (df[col] <= high)
             mask = mask & col_mask
         return df[mask].reset_index(drop=True)
@@ -428,13 +428,10 @@ def main():
         color_mask = None
         blended_image = None
         overlay_image = None
-        df = None
+        df = CSVProcessor.read_csv(data_path)
         scaled_df = None
 
         can_generate_heatmap = True
-
-        # Read CSV file into DataFrame
-        df = CSVProcessor.read_csv(data_path)
 
         if df is None:
             print(f"WARNING: Skipping '{csv_file}' due to read failure.")
@@ -442,22 +439,27 @@ def main():
 
         # Apply normalization if required
         if args.pixel_size and channels_to_normalize:
-            df = CSVProcessor.normalize_by_pixel_size(
+            normalized_df = CSVProcessor.normalize_by_pixel_size(
                 df, args.pixel_size, channels_to_normalize, area_column)
         else:
             print(
                 "WARNING: No pixel size and or channels to normalise were specified. Skipping normalisation step.")
 
-        preprocessed_df = df.copy()
+        preprocessed_df = normalized_df.copy()
 
         # Perform outlier filtering if a method is specified
         if args.outlier_filtering_method:
+
             if args.outlier_filtering_method == 'percentiles':
                 preprocessed_df = CSVProcessor.remove_outliers_percentiles(
                     preprocessed_df, channels_to_filter, p_low, p_high)
             elif args.outlier_filtering_method == 'zscore':
                 preprocessed_df = CSVProcessor.remove_outliers_zscore(
                     preprocessed_df, channels_to_filter, n_std)
+            
+            filtered_rows = df.index.difference(preprocessed_df.index)
+            df = df.drop(filtered_rows)
+
         else:
             print(
                 "WARNING: No outlier filtering method was specified. Skipping this step.")
@@ -478,7 +480,6 @@ def main():
         # Look for a corresponding overlay image
         overlay_image_name = f"{csv_file.split('.')[0]}_overlay.tiff"
         overlay_image_path = os.path.join(args.folder, overlay_image_name)
-        print(overlay_image_path)
         overlay_image = read_overlay_image(overlay_image_path)
         overlay_image = cv2.cvtColor(overlay_image, cv2.COLOR_GRAY2BGR)
         if overlay_image is None:
@@ -489,7 +490,7 @@ def main():
 
             for selected_channel in channels_to_heatmap:
                 if segmentation_mask is not None:
-                    update_color_mask(preprocessed_df, segmentation_mask,
+                    update_color_mask(df, segmentation_mask,
                                       color_mask, selected_channel)
 
                 overlay_image = overlay_image.astype(color_mask.dtype)
@@ -530,8 +531,8 @@ def main():
                     cax = divider.append_axes(
                         "right", size=cbar_size, pad=padding)
 
-                    vmin, vmax = preprocessed_df[selected_channel].min(
-                    ), preprocessed_df[selected_channel].max()
+                    vmin, vmax = df[selected_channel].min(
+                    ), df[selected_channel].max()
                     norm = plt.Normalize(vmin, vmax)
                     cbar = plt.colorbar(plt.cm.ScalarMappable(
                         norm=norm, cmap='turbo'), cax=cax)
@@ -583,11 +584,13 @@ def main():
                     preprocessed_df, csv_path, csv_file.split('.')[0], suffix[:-1])
 
         if not args.no_cluster:
-            print(df)
 
             try:
                 k, resolution_parameter, seed = map(
                     str, args.clustering_parameters.split(','))
+                print("Using the following clustering parameters: \nk = " + k + 
+                    "\nresolution_parameter = " + resolution_parameter + 
+                    "\nseed = " + seed)
 
                 k = int(k)
 
@@ -621,6 +624,7 @@ def main():
             )
 
             preprocessed_df["cluster"] = pd.Categorical(communities)
+            df["cluster"] = pd.Categorical(communities)
 
             # Count the size of each cluster and sort them
             cluster_counts = preprocessed_df['cluster'].value_counts(
@@ -630,6 +634,12 @@ def main():
                   " clusters have been detected.")
             print("Cluster sizes (in descending order):")
             print(cluster_counts)
+
+            # Save histograms of raw data if required
+            if args.save_histograms and channels_to_histogram:
+                for cluster_number in df['cluster'].unique():
+                    CSVProcessor.save_histograms(df, graph_path, csv_file.split('.')[0],
+                                                 channels_to_histogram, 'raw', cluster_number)
 
             # Save histograms for individual clusters
             if args.save_processed_histograms:
@@ -642,14 +652,14 @@ def main():
                 color_mask = np.zeros(
                     (segmentation_mask.shape[0], segmentation_mask.shape[1], 3), dtype=np.uint8)
 
-                for cluster_number in preprocessed_df['cluster'].unique():
+                for cluster_number in df['cluster'].unique():
                     print(f"Saving overlay heatmap for cluster: {cluster_number}")
 
                     # Reset color_mask for each cluster
                     color_mask = np.zeros((segmentation_mask.shape[0], segmentation_mask.shape[1], 3),
                                            dtype=np.uint8)
 
-                    df_cluster = preprocessed_df[preprocessed_df['cluster']
+                    df_cluster = df[df['cluster']
                                                  == cluster_number].copy()
 
                     for selected_channel in channels_to_heatmap:
@@ -696,8 +706,8 @@ def main():
                             cax = divider.append_axes(
                                 "right", size=cbar_size, pad=padding)
 
-                            vmin, vmax = preprocessed_df[selected_channel].min(
-                            ), preprocessed_df[selected_channel].max()
+                            vmin, vmax = df_cluster[selected_channel].min(
+                            ), df_cluster[selected_channel].max()
                             norm = plt.Normalize(vmin, vmax)
                             cbar = plt.colorbar(plt.cm.ScalarMappable(
                                 norm=norm, cmap='turbo'), cax=cax)
@@ -759,9 +769,6 @@ def main():
 
             if not args.no_cluster:
                 embedding_df["cluster"] = preprocessed_df["cluster"]
-
-                # embedding_df["cluster"] = pd.Categorical(
-                #     communities, ordered=True, categories=sorted(set(communities)))
 
                 N = max(embedding_df["cluster"]) + 1
 

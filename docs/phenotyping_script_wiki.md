@@ -222,10 +222,10 @@ Each flag serves a specific purpose and allows you to customize the behavior of 
 - **Example**: `--save_processed_histograms`
 - **Default**: False
 
-### `--save_heatmaps`
+### `--save_processed_csv`
 
-- **Purpose**: Enables the saving of heatmaps for the specified channels.
-- **Example**: `--save_heatmaps`
+- **Purpose**: Enables the saving of processed DataFrames as CSV files.
+- **Example**: `--save_processed_csv`
 - **Default**: False
 
 ### `--save_individual_clusters`
@@ -244,7 +244,15 @@ Each flag serves a specific purpose and allows you to customize the behavior of 
 
 ## Demo Commands
 
-For quick testing or demonstration purposes, here's how you can run the script with all available flags:
+For quick testing or demonstration purposes, here's how you can run the script to generate the following output:
+
+- size normalised data
+- removing the top 0.3% of cells
+- raw & processed histograms
+- heatmap overlays
+- processed CSVs
+
+*Note*: You will need a setup.csv file for these commands.
 
 #### Linux/Mac
 ```
@@ -254,12 +262,12 @@ python script_name.py \
   --setup_csv /path/to/setup.csv \
   --pixel_size 1.0 \
   --outlier_filtering_method percentiles \
-  --n_std 2 \
   --percentiles 0.0,0.997 \
   --no_cluster \
-  --save_histograms True \
-  --save_processed_histograms True \
-  --save_heatmaps True
+  --no_umap \
+  --save_histograms \
+  --save_processed_histograms \
+  --save_processed_csv
 ```
 
 #### Windows
@@ -270,12 +278,12 @@ python script_name.py ^
   --setup_csv C:\path\to\setup.csv ^
   --pixel_size 1.0 ^
   --outlier_filtering_method percentiles ^
-  --n_std 2 ^
   --percentiles 0.0,0.997 ^
   --no_cluster ^
-  --save_histograms True ^
-  --save_processed_histograms True ^
-  --save_heatmaps True
+  --no_umap ^
+  --save_histograms ^
+  --save_processed_histograms ^
+  --save_processed_csv
 ```
 
 Replace placeholders like `path/to/csv/files` or `C:\path\to\csv\files` with your actual paths and adjust the values as needed.

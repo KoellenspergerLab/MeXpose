@@ -59,8 +59,8 @@ To run Fiji in headless mode without a GUI, MeXpose ships with custom aliases fo
  **Usage**: ```fiji-stack /path/to/image1 /path/to/image2 /path/to/output.tiff```
  - ```fiji-tile``` Tiles the input image into the number of desired tiles 'n'.  
  **Usage**: ```fiji-tile /path/to/image number_of_tiles```
- - ```fiji-outliers``` Takes a directory of images and performs outlier filtering on a images contaiend within the directory. First applies a median filter with 'r=radius' and subsequently replaces all pixels devating from the calculated median by more than 't=threshold'.  
-**Usage**: ```fiji-outliers /path/to/images 'r=radius' 't=threshold```
+ - ```fiji-outliers``` Takes a directory of images and performs outlier filtering on images contaiend within the directory. Uses 'n=neighborhoodSize' (integer) to determine the pixels around each pixel for median calculation and 't=thresholdFactor' (float) to determine how many times larger/smaller than the median a pixel value must be to be considered a hot pixel.  
+**Usage**: ```fiji-outliers /path/to/images 'n=neighborhoodSize' 't=thresholdFactor```
 - ```fiji-filter``` Performs gaussian or median filtering with 'r=radius' on all images in a directory.  
 **Usage**: ```fiji-filtering /path/to/images 'f=filter type' 'r=radius```
 
