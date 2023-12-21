@@ -72,6 +72,10 @@ conda activate mexpose
 
 Conda changed its solver to use the much faster libmamba-solver with version 23.10.0. In case you are running an older version of conda we strongly recommend either updating conda or [enabling the `libmamba-solver` manually](https://www.anaconda.com/blog/a-faster-conda-for-a-growing-community).
 
+
+**Note**: Due to default file size limitations of the ipython FileUpload widget the *jupyter\_lab\_config* setting `c.ServerApp.tornado_settings` has to be adapted to a larger value for file sizes larger than 10 MB.  
+The provided *jupyter\_lab\_config* changes this limit to 100 MB. To run JupyterLab notebooks with the provided config use `jupyter-lab --config=/path/to/jupyter_lab_config.py`.
+
 ---
 
 ## Running the MeXpose Container
