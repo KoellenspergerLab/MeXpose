@@ -35,19 +35,19 @@ The MeXpose container should run on any recent (roughly past 5 years) hardware. 
 
 - Containerised:
 	+ Docker (v4.25.1)
-  + MeXpose image (v0.1.3)
+  + MeXpose image (v0.1.4)
 
 - Local:
 	+ Fiji (v1.54f)
 	+ Cellpose (v2.2.3)
 	+ Cellprofiler (v4.2.1)
 	+ Anaconda (recommended) or other Python distribution (Python v3.8.8)
-	+ Cloned MeXpose gihub repository (v0.1.3)
+	+ Cloned MeXpose gihub repository (v0.1.4)
 
 - Building Docker image:
 	+ Docker (v4.25.1)
-  + MeXpose Dockerfile (included in GitHub repository) (v0.1.3)
-	+ Cloned MeXpose gihub repository (v0.1.3)
+  + MeXpose Dockerfile (included in GitHub repository) (v0.1.4)
+	+ Cloned MeXpose gihub repository (v0.1.4)
 
 ### Docker
 
@@ -94,7 +94,7 @@ Docker run -it \
   --volume="/path/to/data/:/root/data/" \
   --net=host \
   --name=mexpose \
-  koellenspergerlab/mexpose:0.1.3
+  koellenspergerlab/mexpose:0.1.4
 ```
 
 The first environment flag as well as the first two volume bind mounts are required for X forwarding, passing graphical output from the container to the host system. The other two environment flags are used for setting the locale. To keep image size as small as possible, only POSIX, C and C.UTF-8 locales are available. If you require a different locale, either 1.) Set the locale in the Dockerfile and rebuild the MeXpose image or 2.) Install the *locales* package with the command below and [set the locale inside the container](https://help.ubuntu.com/community/Locale#Changing_settings_temporarily).
@@ -118,7 +118,7 @@ Docker run -it --rm `
   -v /run/desktop/mnt/host/wslg:/mnt/wslg `
   -v "\path\to\data:/root/data" `
   --name=mexpose `
-  koellensperger-lab/mexpose:0.1.3
+  koellensperger-lab/mexpose:0.1.4
 ```
 
 The first environment flag as well as the first two volume bind mounts are required for X forwarding, passing graphical output from the container to the host system. The other two environment flags are used for setting the locale. To keep image size as small as possible, only POSIX, C and C.UTF-8 locales are available. If you require a different locale, either 1.) Set the locale in the Dockerfile and rebuild the MeXpose image or 2.) Install the *locales* package with the command below and [set the locale inside the container](https://help.ubuntu.com/community/Locale#Changing_settings_temporarily).
