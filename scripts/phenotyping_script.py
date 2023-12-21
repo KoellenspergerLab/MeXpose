@@ -338,7 +338,7 @@ class CSVProcessor:
             high = df[col].quantile(p_high)
             col_mask = (df[col] >= low) & (df[col] <= high)
             mask = mask & col_mask
-        return df[mask].reset_index(drop=True)
+        return df[mask]
 
     @staticmethod
     def remove_outliers_zscore(df, columns, n_std=3):
@@ -359,7 +359,7 @@ class CSVProcessor:
             sd = df[col].std()
             col_mask = df[col] <= mean + (n_std * sd)
             mask = mask & col_mask
-        return df[mask].reset_index(drop=True)
+        return df[mask]
 
     @staticmethod
     def save_dataframe(data, save_path, csv_name, suffix=''):
@@ -428,8 +428,12 @@ def main():
         color_mask = None
         blended_image = None
         overlay_image = None
+        suffix = ""
         df = CSVProcessor.read_csv(data_path)
-        scaled_df = None
+        normalized_df = pd.DataFrame()
+        filtered_df = pd.DataFrame()
+        preprocessed_df = pd.DataFrame()
+        scaled_df = pd.DataFrame()
 
         can_generate_heatmap = True
 
@@ -437,32 +441,94 @@ def main():
             print(f"WARNING: Skipping '{csv_file}' due to read failure.")
             continue
 
-        # Apply normalization if required
-        if args.pixel_size and channels_to_normalize:
-            normalized_df = CSVProcessor.normalize_by_pixel_size(
-                df, args.pixel_size, channels_to_normalize, area_column)
-        else:
-            print(
-                "WARNING: No pixel size and or channels to normalise were specified. Skipping normalisation step.")
+        ##### DEBUG
+        FILTERED = False
+        NORMALIZED = False
+        FILTERED_NORMALIZED = False
 
-        preprocessed_df = normalized_df.copy()
+        if args.pixel_size and channels_to_normalize and args.outlier_filtering_method:
+            FILTERED_NORMALIZED = True
+        elif args.pixel_size and channels_to_normalize and not args.outlier_filtering_method:
+            NORMALIZED = True
+        elif args.outlier_filtering_method and not args.pixel_size:
+            FILTERED = True
 
-        # Perform outlier filtering if a method is specified
-        if args.outlier_filtering_method:
+        # Apply normalisation and or filtering
+        if FILTERED_NORMALIZED:
+
+            suffix = "filtered_normalized_"
 
             if args.outlier_filtering_method == 'percentiles':
+
+                normalized_df = CSVProcessor.normalize_by_pixel_size(
+                df, args.pixel_size, channels_to_normalize, area_column)
+
                 preprocessed_df = CSVProcessor.remove_outliers_percentiles(
-                    preprocessed_df, channels_to_filter, p_low, p_high)
+                    normalized_df, channels_to_filter, p_low, p_high)
+
+                filtered_df = df.loc[preprocessed_df.index]
+
+                print("Data was size-normalized using " + str(args.pixel_size) + " as pixel size and outlier filtered to "
+                    + args.percentiles + " as lower and upper percentile thresholds.")
+
             elif args.outlier_filtering_method == 'zscore':
+
+                normalized_df = CSVProcessor.normalize_by_pixel_size(
+                df, args.pixel_size, channels_to_normalize, area_column)
+
                 preprocessed_df = CSVProcessor.remove_outliers_zscore(
-                    preprocessed_df, channels_to_filter, n_std)
-            
-            filtered_rows = df.index.difference(preprocessed_df.index)
-            df = df.drop(filtered_rows)
+                    normalized_df, channels_to_filter, n_std)
+
+                filtered_df = df.loc[preprocessed_df.index]
+
+                print("Data was size-normalized using " + str(args.pixel_size) + " as pixel size and outlier filtered to "
+                    + str(args.n_std) + " standard deveations from the mean.")
+
+        elif NORMALIZED:
+
+            suffix = "normalized_"
+
+            normalized_df = CSVProcessor.normalize_by_pixel_size(
+                df, args.pixel_size, channels_to_normalize, area_column)
+
+            filtered_df = df.copy()
+
+            preprocessed_df = normalized_df.copy()
+
+            print("WARNING: No outlier filtering method was specified. Skipping this step. \n" + 
+                "Data was size-normalized using " + str(args.pixel_size) + " as pixel size.")
+
+        elif FILTERED:
+
+            suffix = "filtered_"
+
+            if args.outlier_filtering_method == 'percentiles':
+
+                preprocessed_df = CSVProcessor.remove_outliers_percentiles(
+                    normalized_df, channels_to_filter, p_low, p_high)
+
+                filtered_df = preprocessed_df.copy()
+
+                print("WARNING: No pixel size and or channels to normalise were specified. Skipping normalisation step. \n" +
+                    "Data was outlier filtered to " + args.percentiles + " as lower and upper percentile thresholds.")
+
+            elif args.outlier_filtering_method == 'zscore':
+
+                preprocessed_df = CSVProcessor.remove_outliers_zscore(
+                    normalized_df, channels_to_filter, n_std)
+
+                filtered_df = preprocessed_df.copy()
+
+                print("WARNING: No pixel size and or channels to normalise were specified. Skipping normalisation step. \n" +
+                    "Data was outlier filtered to " + str(args.n_std) + " standard deveations from the mean.")
 
         else:
-            print(
-                "WARNING: No outlier filtering method was specified. Skipping this step.")
+
+            suffix = "raw_"
+
+            preprocessed_df = df.copy()
+
+            print("WARNING: Neither pixel size, channels to normalise or outlier filtering method were specified. Continuing with raw data.")
 
         # Look for a corresponding segmentation mask
         segmentation_mask_name = f"{csv_file.split('.')[0]}_mask.png"
@@ -482,6 +548,7 @@ def main():
         overlay_image_path = os.path.join(args.folder, overlay_image_name)
         overlay_image = read_overlay_image(overlay_image_path)
         overlay_image = cv2.cvtColor(overlay_image, cv2.COLOR_GRAY2BGR)
+
         if overlay_image is None:
             print(f"WARNING: No overlay image found for {csv_file}. Generating heatmap without overlay.")
 
@@ -490,14 +557,14 @@ def main():
 
             for selected_channel in channels_to_heatmap:
                 if segmentation_mask is not None:
-                    update_color_mask(df, segmentation_mask,
+                    update_color_mask(filtered_df, segmentation_mask,
                                       color_mask, selected_channel)
 
                 overlay_image = overlay_image.astype(color_mask.dtype)
 
                 if overlay_image is not None and color_mask is not None:
                     blended_image = cv2.addWeighted(
-                        color_mask, 0.6, overlay_image, 0.4, 0)
+                        color_mask, 0.4, overlay_image, 0.6, 0)
                 elif color_mask is not None:
                     blended_image = color_mask
 
@@ -531,8 +598,8 @@ def main():
                     cax = divider.append_axes(
                         "right", size=cbar_size, pad=padding)
 
-                    vmin, vmax = df[selected_channel].min(
-                    ), df[selected_channel].max()
+                    vmin, vmax = filtered_df[selected_channel].min(
+                    ), filtered_df[selected_channel].max()
                     norm = plt.Normalize(vmin, vmax)
                     cbar = plt.colorbar(plt.cm.ScalarMappable(
                         norm=norm, cmap='turbo'), cax=cax)
@@ -559,29 +626,57 @@ def main():
         # Save histograms of raw data if required
         if args.save_histograms and channels_to_histogram:
             CSVProcessor.save_histograms(df, graph_path, csv_file.split('.')[0],
-                                         channels_to_histogram, '')
+                                         channels_to_histogram, 'raw')
 
         # Save histograms of processed data if required
         if args.save_processed_histograms:
-            suffix = ''
-            if args.pixel_size and channels_to_normalize:
-                suffix += 'normalised_'
-            if args.outlier_filtering_method:
-                suffix += 'filtered_'
-            if suffix:
+
+            if FILTERED_NORMALIZED:
+
                 CSVProcessor.save_histograms(preprocessed_df, graph_path, csv_file.split('.')[
                                              0], channels_to_histogram, suffix[:-1])
 
+                CSVProcessor.save_histograms(normalized_df, graph_path, csv_file.split('.')[
+                                             0], channels_to_histogram, suffix[8:-1])
+
+                CSVProcessor.save_histograms(filtered_df, graph_path, csv_file.split('.')[
+                                             0], channels_to_histogram, suffix[:9])
+
+            elif NORMALIZED:
+
+                CSVProcessor.save_histograms(normalized_df, graph_path, csv_file.split('.')[
+                                             0], channels_to_histogram, suffix[:-1])
+
+            elif FILTERED:
+
+                CSVProcessor.save_histograms(filtered_df, graph_path, csv_file.split('.')[
+                                             0], channels_to_histogram, suffix[:-1])
+
+
         # Save processed DataFrame as CSV if required
-        if args.save_processed_csv:
-            suffix = ''
-            if args.pixel_size and channels_to_normalize:
-                suffix += 'normalised_'
-            if args.outlier_filtering_method:
-                suffix += 'filtered_'
-            if suffix:
+        if args.save_processed_histograms:
+
+            if FILTERED_NORMALIZED:
+
                 CSVProcessor.save_dataframe(
                     preprocessed_df, csv_path, csv_file.split('.')[0], suffix[:-1])
+
+                CSVProcessor.save_dataframe(
+                    normalized_df, csv_path, csv_file.split('.')[0], suffix[8:-1])
+
+                CSVProcessor.save_dataframe(
+                    filtered_df, csv_path, csv_file.split('.')[0], suffix[:9])
+
+            elif NORMALIZED:
+
+                CSVProcessor.save_dataframe(
+                    normalized_df, csv_path, csv_file.split('.')[0], suffix[:-1])
+
+            elif FILTERED:
+
+                CSVProcessor.save_dataframe(
+                    filtered_df, csv_path, csv_file.split('.')[0], suffix[:-1])
+
 
         if not args.no_cluster:
 
@@ -624,7 +719,7 @@ def main():
             )
 
             preprocessed_df["cluster"] = pd.Categorical(communities)
-            df["cluster"] = pd.Categorical(communities)
+            filtered_df["cluster"] = pd.Categorical(communities)
 
             # Count the size of each cluster and sort them
             cluster_counts = preprocessed_df['cluster'].value_counts(
@@ -635,15 +730,17 @@ def main():
             print("Cluster sizes (in descending order):")
             print(cluster_counts)
 
-            # Save histograms of raw data if required
+            # Save histograms of non-normalized data if required
             if args.save_histograms and channels_to_histogram:
-                for cluster_number in df['cluster'].unique():
-                    CSVProcessor.save_histograms(df, graph_path, csv_file.split('.')[0],
-                                                 channels_to_histogram, 'raw', cluster_number)
+                for cluster_number in filtered_df['cluster'].unique():
+                    CSVProcessor.save_histograms(filtered_df, graph_path, csv_file.split('.')[0],
+                                                 channels_to_histogram, "raw_", cluster_number)
 
-            # Save histograms for individual clusters
-            if args.save_processed_histograms:
+            # Save processed histograms for individual clusters
+            if args.save_processed_histograms and not suffix == "raw_":
+
                 for cluster_number in preprocessed_df['cluster'].unique():
+
                     CSVProcessor.save_histograms(preprocessed_df, graph_path, csv_file.split('.')[0],
                                                  channels_to_histogram, suffix[:-1], cluster_number)
 
@@ -652,14 +749,14 @@ def main():
                 color_mask = np.zeros(
                     (segmentation_mask.shape[0], segmentation_mask.shape[1], 3), dtype=np.uint8)
 
-                for cluster_number in df['cluster'].unique():
+                for cluster_number in filtered_df['cluster'].unique():
                     print(f"Saving overlay heatmap for cluster: {cluster_number}")
 
                     # Reset color_mask for each cluster
                     color_mask = np.zeros((segmentation_mask.shape[0], segmentation_mask.shape[1], 3),
                                            dtype=np.uint8)
 
-                    df_cluster = df[df['cluster']
+                    df_cluster = filtered_df[filtered_df['cluster']
                                                  == cluster_number].copy()
 
                     for selected_channel in channels_to_heatmap:
@@ -819,7 +916,7 @@ def main():
             aggregated_clusters = pd.DataFrame()
 
             for cluster_df in cluster_list:
-                if aggregation_method == "median":
+                if aggregation_method == "median": # median
                     aggregated_value = cluster_df.median(
                         axis=0, numeric_only=True)
                 else:  # mean
@@ -905,8 +1002,8 @@ def main():
             if args.save_combined_clusters:
                 combined_csv_path = os.path.join(csv_path, f"{csv_file.split('.')[0]}_combined_clusters.csv")
 
-                if "cluster" in preprocessed_df.columns:
-                    preprocessed_df['cluster'] = preprocessed_df['cluster']
+                # if "cluster" in preprocessed_df.columns:
+                #     preprocessed_df['cluster'] = preprocessed_df['cluster']
 
                 preprocessed_df.to_csv(combined_csv_path, index=False)
 

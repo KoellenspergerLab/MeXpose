@@ -78,7 +78,7 @@ Conda changed its solver to use the much faster libmamba-solver with version 23.
 
 ### Runtime
 
-On a an Intel i7-10700 with 32GB of RAM the runtime for the *phenotyping_script* with all output options enabled is ~04:30 minutes (~800x700 pixels; ~3300 cells; 10 image channels).
+On a an Intel i7-10700 with 32GB of RAM the runtime for the *phenotyping_script* with all output options enabled is ~06:30 minutes (~800x700 pixels; ~3300 cells; 10 image channels).
 
 #### Linux
 
