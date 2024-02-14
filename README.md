@@ -101,7 +101,7 @@ Docker run -it --rm \
   koellenspergerlab/mexpose:0.1.4
 ```
 
-When using this command the container will be deleted after the container is exited. Any data created during is saved to the mounted data directory during analysis. To allow the container to persist after exiting remove the ```--rm``` flag.  
+When using this command the container will be deleted after the container is exited. Any data created during analysis is saved to the mounted data directory. To allow the container to persist after exiting remove the ```--rm``` flag. 
 
 The first environment flag as well as the first two volume bind mounts are required for X forwarding, passing graphical output from the container to the host system. The other two environment flags are used for setting the locale. To keep image size as small as possible, only POSIX, C and C.UTF-8 locales are available. If you require a different locale, either 1.) Set the locale in the Dockerfile and rebuild the MeXpose image or 2.) Install the *locales* package with the command below and [set the locale inside the container](https://help.ubuntu.com/community/Locale#Changing_settings_temporarily).
 
@@ -127,7 +127,7 @@ Docker run -it --rm `
   koellenspergerlab/mexpose:0.1.4
 ```
 
-When using this command the container will be deleted after the container is exited. Any data created during is saved to the mounted data directory during analysis. To allow the container to persist after exiting remove the ```--rm``` flag.   
+When using this command the container will be deleted after the container is exited. Any data created during analysis is saved to the mounted data directory. To allow the container to persist after exiting remove the ```--rm``` flag.   
 
 The first environment flag as well as the first two volume bind mounts are required for X forwarding, passing graphical output from the container to the host system. The other two environment flags are used for setting the locale. To keep image size as small as possible, only POSIX, C and C.UTF-8 locales are available. If you require a different locale, either 1.) Set the locale in the Dockerfile and rebuild the MeXpose image or 2.) Install the *locales* package with the command below and [set the locale inside the container](https://help.ubuntu.com/community/Locale#Changing_settings_temporarily).
 
