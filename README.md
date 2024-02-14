@@ -89,7 +89,7 @@ On a an Intel i7-10700 with 32GB of RAM the runtime for the *phenotyping_script*
 To pull the MeXpose Docker image and run a container enter the following command in your terminal. Adjust the volume bind mount `--volume="/path/to/data/:/root/data/"` according to your directory structure.
 
 ```
-Docker run -it \
+Docker run -it --rm \
   --env="DISPLAY" \
   --env=LANG=C.UTF-8 \
   --env=LC_ALL=C.UTF-8 \
@@ -100,6 +100,8 @@ Docker run -it \
   --name=mexpose \
   koellenspergerlab/mexpose:0.1.4
 ```
+
+When using this command the container will be deleted after the container is exited. Any data created during is saved to the mounted data directory during analysis. To allow the container to persist after exiting remove the ```--rm``` flag.  
 
 The first environment flag as well as the first two volume bind mounts are required for X forwarding, passing graphical output from the container to the host system. The other two environment flags are used for setting the locale. To keep image size as small as possible, only POSIX, C and C.UTF-8 locales are available. If you require a different locale, either 1.) Set the locale in the Dockerfile and rebuild the MeXpose image or 2.) Install the *locales* package with the command below and [set the locale inside the container](https://help.ubuntu.com/community/Locale#Changing_settings_temporarily).
 
@@ -122,8 +124,10 @@ Docker run -it --rm `
   -v /run/desktop/mnt/host/wslg:/mnt/wslg `
   -v "\path\to\data:/root/data" `
   --name=mexpose `
-  koellensperger-lab/mexpose:0.1.4
+  koellenspergerlab/mexpose:0.1.4
 ```
+
+When using this command the container will be deleted after the container is exited. Any data created during is saved to the mounted data directory during analysis. To allow the container to persist after exiting remove the ```--rm``` flag.   
 
 The first environment flag as well as the first two volume bind mounts are required for X forwarding, passing graphical output from the container to the host system. The other two environment flags are used for setting the locale. To keep image size as small as possible, only POSIX, C and C.UTF-8 locales are available. If you require a different locale, either 1.) Set the locale in the Dockerfile and rebuild the MeXpose image or 2.) Install the *locales* package with the command below and [set the locale inside the container](https://help.ubuntu.com/community/Locale#Changing_settings_temporarily).
 
