@@ -155,16 +155,20 @@ A typical MeXpose interactive workflow would look like this:
 
 Please cite the following paper when using MeXpose in your work:
 
-> MeXpose - A modular imaging pipeline for the quantitative assessment of cellular metal bioaccumulation. Gabriel Braun, Martin Schaier, Paulina Werner, Sarah Theiner, Juergen Zanghellini, Lukas Wisgrill, Nanna Fyhrquist, Gunda Koellensperger. bioRxiv 2023.12.15.571675; doi: https://doi.org/10.1101/2023.12.15.571675
+> MeXpose - A modular imaging pipeline for the quantitative assessment of cellular metal bioaccumulation. Gabriel Braun and Martin Schaier, Paulina Werner, Sarah Theiner, Juergen Zanghellini, Lukas Wisgrill, Nanna Fyhrquist, Gunda Koellensperger. JACS Au 2024 4 (6), 2197-2210; DOI: 10.1021/jacsau.4c00154
 
 ```
-@article {Braun_Schaier2023,
-  author = {Gabriel Braun and Martin Schaier and Paulina Werner and Sarah Theiner and Juergen Zanghellini and Lukas Wisgrill and Nanna Fyhrquist and Gunda Koellensperger},
-  title = {MeXpose - A modular imaging pipeline for the quantitative assessment of cellular metal bioaccumulation},
-  year = {2023},
-  doi = {10.1101/2023.12.15.571675},
-  URL = {https://www.biorxiv.org/content/early/2023/12/15/2023.12.15.571675},
-  journal = {bioRxiv}
+@article{Braun_Schaier2024,
+author = {Braun, Gabriel and Schaier, Martin and Werner, Paulina and Theiner, Sarah and Zanghellini, Jürgen and Wisgrill, Lukas and Fyhrquist, Nanna and Koellensperger, Gunda},
+title = {MeXpose─A Modular Imaging Pipeline for the Quantitative Assessment of Cellular Metal Bioaccumulation},
+journal = {JACS Au},
+volume = {4},
+number = {6},
+pages = {2197-2210},
+year = {2024},
+doi = {10.1021/jacsau.4c00154},
+URL = {https://doi.org/10.1021/jacsau.4c00154},
+eprint = {https://doi.org/10.1021/jacsau.4c00154}
 }
 ```
 
