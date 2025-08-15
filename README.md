@@ -99,6 +99,17 @@ Using preprocessed (NuQuant) combined laser- and TOF data in CSV format
 
 Support for additional file formats is provided by the use of the [imageio Python library](https://imageio.readthedocs.io/en/stable/).
 
+## Segmentation
+
+MeXpose is focused around single-cell analysis. In order to extract single-cell data as well as for several visualisations a greyscale segmentation mask is required.  
+We recommend using (a recent version of) Cellpose as we find it performs very well and works reliably while additionally allowing annotating and training in a user-friendly GUI.  
+Visit the [Cellpose github](https://github.com/MouseLand/cellpose?tab=readme-ov-file#installation) for installation instructions and their [documentation](https://cellpose.readthedocs.io/en/latest/) for additioanl information.  
+
+You can also try Cellpose-SAM here:
+- [Try cellpose-sam](https://huggingface.co/spaces/mouseland/cellpose)
+
+> Pachitariu, M., Rariden, M., & Stringer, C. (2025). Cellpose-SAM: superhuman generalization for cellular segmentation. bioRxiv.
+
 ## Citing MeXpose
 
 Please cite the following papers when using either the original MeXpose or MeXpose 2.0 in your work:
