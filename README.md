@@ -102,8 +102,9 @@ Support for additional file formats is provided by the use of the [imageio Pytho
 ## Segmentation
 
 MeXpose is focused around single-cell analysis. In order to extract single-cell data as well as for several visualisations a greyscale segmentation mask is required.  
-We recommend using (a recent version of) Cellpose as we find it performs very well and works reliably while additionally allowing annotating and training in a user-friendly GUI.  
-Visit the [Cellpose github](https://github.com/MouseLand/cellpose?tab=readme-ov-file#installation) for installation instructions and their [documentation](https://cellpose.readthedocs.io/en/latest/) for additioanl information.  
+We recommend using (a recent version of) Cellpose as we find it performs very well and works reliably while additionally allowing annotation and training in a user-friendly GUI.  
+
+Visit the [Cellpose github](https://github.com/MouseLand/cellpose?tab=readme-ov-file#installation) for installation instructions and their [documentation](https://cellpose.readthedocs.io/en/latest/) for additional information.  
 
 You can also try Cellpose-SAM here:
 - [Try cellpose-sam](https://huggingface.co/spaces/mouseland/cellpose)
