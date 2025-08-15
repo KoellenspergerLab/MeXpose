@@ -1,5 +1,7 @@
 <img src="https://raw.githubusercontent.com/KoellenspergerLab/MeXpose/master/mexpose2_graphic.jpg" width=65% height=65%>
 
+**Note:** If you are looking for MeXpose v1 you can find it under the [mexpose_v1](https://github.com/KoellenspergerLab/MeXpose/tree/mexpose_v1) branch. 
+  
 ## Welcome
 
 MeXpose 2.0 is a major update to our interactive workflow for comprehensive analysis of multiplexed imaging data, optimised for spatial metallomics. The new release streamlines the existing pipeline by replacing third-party software with custom Jupyter notebooks for image reconstruction, preprocessing, and data extraction. Additional new features such as limit-of-detection calculation, cytometry-style gating, and integrated spatial statistics enhance both exploratory and quantitative analyses within a single, intuitive environment.
