@@ -119,18 +119,7 @@ Please cite the following papers when using either the original MeXpose or MeXpo
   
 **MeXpose 2.0**  
 
-> MeXpose 2.0: An Essential Tool in Spatial (Metall-)omics - Covering All Steps from Image Reconstruction to Comprehensive Analysis. Gabriel Braun, Lyndsey Hendriks, Claude Molitor, Elisabeth Foels, Martin Schaier, Gunda Koellensperger. bioRxiv, 2025, DOI: [to be updated]
-
-```bibtex
-@article{Braun_MeXpose2_2025,
-author = {Braun, Gabriel and Hendriks, Lyndsey and Molitor, Claude and Foels, Elisabeth and Schaier, Martin and Koellensperger, Gunda},
-title = {MeXpose 2.0: An Essential Tool in Spatial (Metall-)omics - Covering All Steps from Image Reconstruction to Comprehensive Analysis},
-journal = {bioRxiv},
-year = {2025},
-doi = {[to be updated]},
-URL = {[to be updated]}
-}
-```
+To be updated
 
 **MeXpose 1.0**  
 
